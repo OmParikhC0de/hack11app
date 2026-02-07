@@ -145,24 +145,88 @@
     color: var(--magic-green);
 }
 
-/* Source */
-.trend-source {
+/* Sources */
+.trend-sources {
     display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
+    flex-direction: column;
+    gap: 0.5rem;
     padding-top: 0.75rem;
     border-top: 1px solid var(--glass-border);
 }
 
-.source-icon {
-    font-size: 0.9rem;
+.sources-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-.source-name {
+.sources-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.source-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
+}
+
+.source-badge:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.source-badge .source-icon {
+    font-size: 0.65rem;
+}
+
+.source-badge .source-name {
+    color: var(--text-secondary);
     font-weight: 500;
-    color: var(--crystal-blue);
+}
+
+.source-reddit {
+    border-color: rgba(255, 69, 0, 0.4);
+}
+
+.source-reddit:hover {
+    border-color: rgba(255, 69, 0, 0.7);
+    box-shadow: 0 2px 8px rgba(255, 69, 0, 0.2);
+}
+
+.source-twitter {
+    border-color: rgba(29, 161, 242, 0.4);
+}
+
+.source-twitter:hover {
+    border-color: rgba(29, 161, 242, 0.7);
+    box-shadow: 0 2px 8px rgba(29, 161, 242, 0.2);
+}
+
+.source-tiktok {
+    border-color: rgba(254, 44, 85, 0.4);
+}
+
+.source-tiktok:hover {
+    border-color: rgba(254, 44, 85, 0.7);
+    box-shadow: 0 2px 8px rgba(254, 44, 85, 0.2);
+}
+
+.source-news {
+    border-color: rgba(0, 255, 136, 0.4);
+}
+
+.source-news:hover {
+    border-color: rgba(0, 255, 136, 0.7);
+    box-shadow: 0 2px 8px rgba(0, 255, 136, 0.2);
 }
 
 /* Corner decorations */

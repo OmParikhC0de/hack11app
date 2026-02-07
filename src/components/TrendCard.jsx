@@ -70,10 +70,17 @@ export default function TrendCard({ trend, index }) {
                 ))}
             </div>
 
-            {/* Source */}
-            <div className="trend-source">
-                <span className="source-icon">📍</span>
-                <span className="source-name">{trend.source}</span>
+            {/* Sources */}
+            <div className="trend-sources">
+                <span className="sources-label">📍 Sources:</span>
+                <div className="sources-list">
+                    {trend.sources.map((source, i) => (
+                        <span key={i} className={`source-badge source-${source.type}`}>
+                            <span className="source-icon">{source.icon}</span>
+                            <span className="source-name">{source.name}</span>
+                        </span>
+                    ))}
+                </div>
             </div>
 
             {/* Magical corner decoration */}

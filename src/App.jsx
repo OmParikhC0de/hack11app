@@ -4,6 +4,12 @@ import CrystalBall from './components/CrystalBall';
 import TrendCard from './components/TrendCard';
 import MagicButton from './components/MagicButton';
 import LoadingSpell from './components/LoadingSpell';
+import Navigation from './components/Navigation';
+import Consultation from './components/Consultation';
+import FAQ from './components/FAQ';
+import QuestBoard from './components/QuestBoard';
+import RealmMap from './components/RealmMap';
+import MouseTrail from './components/MouseTrail';
 import { fetchTrends } from './data/mockTrends';
 import './App.css';
 
@@ -11,6 +17,7 @@ function App() {
   const [trends, setTrends] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasRevealed, setHasRevealed] = useState(false);
+  const [activeTab, setActiveTab] = useState('home');
 
   const handleRevealTrends = async () => {
     setIsLoading(true);
@@ -30,6 +37,12 @@ function App() {
 
   return (
     <div className="app-container">
+      {/* Mouse Trail Effect */}
+      <MouseTrail />
+
+      {/* Navigation Tabs */}
+      <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+
       {/* Header */}
       <header className="app-header">
         <h1 className="app-title">
@@ -41,61 +54,71 @@ function App() {
         </p>
       </header>
 
-      {/* Main content area */}
-      <main className="app-main">
-        {/* Left: Wizard */}
-        <section className="wizard-section">
-          <WizardCharacter isAnalyzing={isLoading} />
-        </section>
+      {/* Conditional Content */}
+      {activeTab === 'home' && (
+        <>
+          {/* Main content area */}
+          <main className="app-main">
+            {/* Left: Wizard */}
+            <section className="wizard-section">
+              <WizardCharacter isAnalyzing={isLoading} />
+            </section>
 
-        {/* Center: Crystal Ball + Button */}
-        <section className="crystal-section">
-          <CrystalBall isActive={isLoading}>
-            {isLoading ? (
-              <LoadingSpell />
-            ) : hasRevealed ? (
-              <div className="reveal-complete">
-                <span className="reveal-icon">✨</span>
-                <span className="reveal-text">Trends Revealed!</span>
+            {/* Center: Crystal Ball + Button */}
+            <section className="crystal-section">
+              <CrystalBall isActive={isLoading}>
+                {isLoading ? (
+                  <LoadingSpell />
+                ) : hasRevealed ? (
+                  <div className="reveal-complete">
+                    <span className="reveal-icon">✨</span>
+                    <span className="reveal-text">Trends Revealed!</span>
+                  </div>
+                ) : (
+                  <div className="crystal-prompt">
+                    <span className="prompt-icon">🔮</span>
+                    <span className="prompt-text">Awaiting your command...</span>
+                  </div>
+                )}
+              </CrystalBall>
+
+              <div className="action-area">
+                <MagicButton
+                  onClick={handleRevealTrends}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Casting Spell...' : hasRevealed ? 'Discover More' : 'Reveal Trends'}
+                </MagicButton>
               </div>
-            ) : (
-              <div className="crystal-prompt">
-                <span className="prompt-icon">🔮</span>
-                <span className="prompt-text">Awaiting your command...</span>
+            </section>
+          </main>
+
+          {/* Trends Results */}
+          {hasRevealed && trends.length > 0 && (
+            <section className="trends-section">
+              <h2 className="trends-title">
+                <span className="title-decoration">✦</span>
+                Emerging Eco-Trends
+                <span className="title-decoration">✦</span>
+              </h2>
+              <p className="trends-subtitle">
+                Top {trends.length} sustainability movements detected across eco-communities
+              </p>
+
+              <div className="trends-grid">
+                {trends.map((trend, index) => (
+                  <TrendCard key={trend.id} trend={trend} index={index} />
+                ))}
               </div>
-            )}
-          </CrystalBall>
-
-          <div className="action-area">
-            <MagicButton
-              onClick={handleRevealTrends}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Casting Spell...' : hasRevealed ? 'Discover More' : 'Reveal Trends'}
-            </MagicButton>
-          </div>
-        </section>
-      </main>
-
-      {/* Trends Results */}
-      {hasRevealed && trends.length > 0 && (
-        <section className="trends-section">
-          <h2 className="trends-title">
-            <span className="title-decoration">✦</span>
-            Emerging Eco-Trends
-            <span className="title-decoration">✦</span>
-          </h2>
-          <p className="trends-subtitle">
-            Top {trends.length} sustainability movements detected across eco-communities
-          </p>
-
-          <div className="trends-grid">
-            {trends.map((trend, index) => (
-              <TrendCard key={trend.id} trend={trend} index={index} />
-            ))}
-          </div>
-        </section>
+            </section>
+          )}
+        </>
       )}
+
+      {activeTab === 'consultation' && <Consultation />}
+      {activeTab === 'faq' && <FAQ />}
+      {activeTab === 'quests' && <QuestBoard />}
+      {activeTab === 'map' && <RealmMap />}
 
       {/* Footer */}
       <footer className="app-footer">
