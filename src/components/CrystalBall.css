@@ -1,0 +1,271 @@
+.crystal-ball-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.crystal-ball {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Outer glow ring */
+.glow-ring {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+            rgba(0, 255, 136, 0.1) 0%,
+            rgba(0, 212, 255, 0.05) 40%,
+            transparent 70%);
+    animation: ringPulse 3s ease-in-out infinite;
+    z-index: 0;
+}
+
+.crystal-ball-container.active .glow-ring {
+    animation: ringPulse 1s ease-in-out infinite;
+    background: radial-gradient(circle,
+            rgba(0, 255, 136, 0.2) 0%,
+            rgba(0, 212, 255, 0.1) 40%,
+            transparent 70%);
+}
+
+@keyframes ringPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+/* The main orb */
+.orb {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%,
+            rgba(100, 80, 160, 0.4) 0%,
+            rgba(45, 27, 78, 0.8) 50%,
+            rgba(13, 10, 26, 0.95) 100%);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 0 60px rgba(0, 255, 136, 0.2),
+        0 0 100px rgba(138, 43, 226, 0.1),
+        inset 0 0 60px rgba(0, 0, 0, 0.5),
+        inset 0 -20px 40px rgba(0, 255, 136, 0.1);
+    z-index: 1;
+    transition: all 0.5s ease;
+}
+
+.crystal-ball-container.active .orb {
+    box-shadow:
+        0 0 80px rgba(0, 255, 136, 0.4),
+        0 0 120px rgba(138, 43, 226, 0.2),
+        inset 0 0 60px rgba(0, 0, 0, 0.5),
+        inset 0 -20px 40px rgba(0, 255, 136, 0.2);
+}
+
+/* Swirling mist layers */
+.mist-layer {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    border-radius: 50%;
+    opacity: 0.3;
+}
+
+.mist-1 {
+    background: radial-gradient(ellipse at center,
+            rgba(0, 255, 136, 0.3) 0%,
+            transparent 50%);
+    animation: swirl 10s linear infinite;
+}
+
+.mist-2 {
+    background: radial-gradient(ellipse at center,
+            rgba(0, 212, 255, 0.2) 0%,
+            transparent 50%);
+    animation: swirl 15s linear infinite reverse;
+}
+
+.mist-3 {
+    background: radial-gradient(ellipse at center,
+            rgba(138, 43, 226, 0.2) 0%,
+            transparent 50%);
+    animation: swirl 20s linear infinite;
+}
+
+.crystal-ball-container.active .mist-1,
+.crystal-ball-container.active .mist-2,
+.crystal-ball-container.active .mist-3 {
+    opacity: 0.6;
+    animation-duration: 3s, 4s, 5s;
+}
+
+@keyframes swirl {
+    0% {
+        transform: rotate(0deg) translateX(20px);
+    }
+
+    100% {
+        transform: rotate(360deg) translateX(20px);
+    }
+}
+
+/* Content inside orb */
+.orb-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    overflow: hidden;
+    border-radius: 50%;
+}
+
+/* Glass reflection highlight */
+.glass-reflection {
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    width: 40%;
+    height: 30%;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.3) 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 100%);
+    border-radius: 50%;
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* Crystal stand */
+.crystal-stand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -20px;
+    z-index: 0;
+}
+
+.stand-top {
+    width: 80px;
+    height: 20px;
+    background: linear-gradient(to bottom,
+            #8B7355 0%,
+            #6B5344 50%,
+            #4a3728 100%);
+    border-radius: 5px 5px 0 0;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.stand-middle {
+    width: 40px;
+    height: 30px;
+    background: linear-gradient(to bottom,
+            #6B5344 0%,
+            #4a3728 100%);
+    clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);
+}
+
+.stand-bottom {
+    width: 100px;
+    height: 15px;
+    background: linear-gradient(to bottom,
+            #4a3728 0%,
+            #2d1f18 100%);
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Floating runes */
+.runes-container {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.rune {
+    position: absolute;
+    font-size: 1.5rem;
+    color: var(--magic-green);
+    text-shadow: 0 0 10px var(--magic-green);
+    animation: orbitRune 4s linear infinite;
+    animation-delay: calc(var(--i) * -0.67s);
+}
+
+@keyframes orbitRune {
+    0% {
+        transform: rotate(calc(var(--i) * 60deg)) translateX(175px) rotate(calc(var(--i) * -60deg));
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotate(calc(var(--i) * 60deg + 360deg)) translateX(175px) rotate(calc(var(--i) * -60deg - 360deg));
+        opacity: 0.3;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .orb {
+        width: 220px;
+        height: 220px;
+    }
+
+    .glow-ring {
+        width: 260px;
+        height: 260px;
+    }
+
+    .runes-container {
+        width: 280px;
+        height: 280px;
+    }
+
+    .rune {
+        font-size: 1.2rem;
+    }
+
+    @keyframes orbitRune {
+        0% {
+            transform: rotate(calc(var(--i) * 60deg)) translateX(140px) rotate(calc(var(--i) * -60deg));
+            opacity: 0.3;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            transform: rotate(calc(var(--i) * 60deg + 360deg)) translateX(140px) rotate(calc(var(--i) * -60deg - 360deg));
+            opacity: 0.3;
+        }
+    }
+}

@@ -1,0 +1,201 @@
+.loading-spell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 2rem;
+}
+
+/* Spinning runes circle */
+.runes-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    animation: spinSlow 8s linear infinite;
+}
+
+.rune-item {
+    position: absolute;
+    font-size: 1.5rem;
+    color: var(--magic-green);
+    text-shadow: 0 0 10px var(--magic-green);
+    animation: runePulse 2s ease-in-out infinite;
+}
+
+.rune-item:nth-child(1) {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 0s;
+}
+
+.rune-item:nth-child(2) {
+    top: 25%;
+    right: 0;
+    animation-delay: 0.33s;
+}
+
+.rune-item:nth-child(3) {
+    bottom: 25%;
+    right: 0;
+    animation-delay: 0.66s;
+}
+
+.rune-item:nth-child(4) {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-delay: 1s;
+}
+
+.rune-item:nth-child(5) {
+    bottom: 25%;
+    left: 0;
+    animation-delay: 1.33s;
+}
+
+.rune-item:nth-child(6) {
+    top: 25%;
+    left: 0;
+    animation-delay: 1.66s;
+}
+
+@keyframes spinSlow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes runePulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Center orb */
+.center-orb {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.orb-pulse {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+            rgba(0, 255, 136, 0.3) 0%,
+            transparent 70%);
+    animation: orbPulseAnim 1.5s ease-in-out infinite;
+}
+
+@keyframes orbPulseAnim {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.8;
+    }
+}
+
+.orb-core {
+    font-size: 2rem;
+    z-index: 1;
+    animation: coreFloat 2s ease-in-out infinite;
+}
+
+@keyframes coreFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Loading text */
+.loading-text {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-align: center;
+    font-style: italic;
+    margin: 0;
+    margin-top: 1rem;
+}
+
+/* Loading dots */
+.loading-dots {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--magic-green);
+    animation: dotBounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0s;
+}
+
+@keyframes dotBounce {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Position runes correctly */
+.runes-circle {
+    position: relative;
+}
+
+.loading-spell {
+    position: relative;
+}
