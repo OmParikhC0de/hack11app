@@ -1,88 +1,6 @@
 import { useState, useEffect } from 'react';
+import { generateQuestBatch } from '../utils/questGenerator';
 import './QuestBoard.css';
-
-const questsData = [
-    {
-        id: 1,
-        title: "The Zero-Waste Lunch",
-        description: "Pack a completely plastic-free lunch today. Use reusable containers, cloth napkins, and metal utensils.",
-        difficulty: "Easy",
-        xp: 50,
-        manaReward: 15,
-        icon: "🥗",
-        category: "waste"
-    },
-    {
-        id: 2,
-        title: "Phantom Energy Hunt",
-        description: "Unplug 5 devices that are consuming standby power. Slay these energy vampires!",
-        difficulty: "Easy",
-        xp: 40,
-        manaReward: 12,
-        icon: "🔌",
-        category: "energy"
-    },
-    {
-        id: 3,
-        title: "The Meat-Free Feast",
-        description: "Prepare a delicious plant-based dinner. Discover new recipes and reduce your carbon footprint.",
-        difficulty: "Medium",
-        xp: 75,
-        manaReward: 25,
-        icon: "🥬",
-        category: "food"
-    },
-    {
-        id: 4,
-        title: "The Great Declutter",
-        description: "Find 10 items to donate or recycle. Give old possessions a new life elsewhere.",
-        difficulty: "Medium",
-        xp: 80,
-        manaReward: 28,
-        icon: "📦",
-        category: "waste"
-    },
-    {
-        id: 5,
-        title: "Hydration Guardian",
-        description: "Use only your reusable water bottle today. Refuse all single-use plastic bottles.",
-        difficulty: "Easy",
-        xp: 35,
-        manaReward: 10,
-        icon: "💧",
-        category: "water"
-    },
-    {
-        id: 6,
-        title: "The Green Commute",
-        description: "Walk, bike, or use public transit for all travel today. Leave the car behind!",
-        difficulty: "Hard",
-        xp: 100,
-        manaReward: 40,
-        icon: "🚲",
-        category: "transport"
-    },
-    {
-        id: 7,
-        title: "Digital Cleanup",
-        description: "Delete 100 old emails and unsubscribe from 5 newsletters. Reduce digital carbon footprint.",
-        difficulty: "Easy",
-        xp: 45,
-        manaReward: 14,
-        icon: "📧",
-        category: "energy"
-    },
-    {
-        id: 8,
-        title: "Nature's Healer",
-        description: "Plant something today - a tree, flower, or herb. Even a small pot counts!",
-        difficulty: "Medium",
-        xp: 90,
-        manaReward: 30,
-        icon: "🌳",
-        category: "nature"
-    }
-];
 
 const difficultyColors = {
     Easy: 'var(--magic-green)',
@@ -141,89 +59,88 @@ function Fireworks({ onComplete }) {
 }
 
 function QuestBoard() {
-    const [acceptedQuests, setAcceptedQuests] = useState(() => {
-        const saved = localStorage.getItem('eco-accepted-quests');
+    // Persistent State: Total XP (Lifetime)
+    const [totalXP, setTotalXP] = useState(() => {
+        const saved = localStorage.getItem('eco-total-xp');
+        return saved ? parseInt(saved) : 0;
+    });
+
+    // Persistent State: Active Quests (Current Batch Objects)
+    const [activeQuests, setActiveQuests] = useState(() => {
+        const saved = localStorage.getItem('eco-active-quests');
+        return saved ? JSON.parse(saved) : generateQuestBatch(8);
+    });
+
+    // Persistent State: Accepted Quest IDs
+    const [acceptedIds, setAcceptedIds] = useState(() => {
+        const saved = localStorage.getItem('eco-accepted-ids');
         return saved ? JSON.parse(saved) : [];
     });
 
-    const [completedQuests, setCompletedQuests] = useState(() => {
-        const saved = localStorage.getItem('eco-completed-quests');
+    // Persistent State: Completed Quest IDs (Current Batch)
+    const [completedIds, setCompletedIds] = useState(() => {
+        const saved = localStorage.getItem('eco-completed-ids');
         return saved ? JSON.parse(saved) : [];
     });
 
     const [mana, setMana] = useState(() => {
         const saved = localStorage.getItem('eco-mana');
-        return saved ? parseInt(saved) : 0; // Start at 0
+        return saved ? parseInt(saved) : 0;
     });
 
     const [showFireworks, setShowFireworks] = useState(false);
-    const [availableQuests, setAvailableQuests] = useState(() => {
-        const saved = localStorage.getItem('eco-available-quests');
-        return saved ? JSON.parse(saved) : questsData.map(q => q.id);
-    });
 
-    useEffect(() => {
-        localStorage.setItem('eco-accepted-quests', JSON.stringify(acceptedQuests));
-    }, [acceptedQuests]);
-
-    useEffect(() => {
-        localStorage.setItem('eco-completed-quests', JSON.stringify(completedQuests));
-    }, [completedQuests]);
-
-    useEffect(() => {
-        localStorage.setItem('eco-mana', mana.toString());
-    }, [mana]);
-
-    useEffect(() => {
-        localStorage.setItem('eco-available-quests', JSON.stringify(availableQuests));
-    }, [availableQuests]);
+    // Persistence Effects
+    useEffect(() => { localStorage.setItem('eco-total-xp', totalXP.toString()); }, [totalXP]);
+    useEffect(() => { localStorage.setItem('eco-active-quests', JSON.stringify(activeQuests)); }, [activeQuests]);
+    useEffect(() => { localStorage.setItem('eco-accepted-ids', JSON.stringify(acceptedIds)); }, [acceptedIds]);
+    useEffect(() => { localStorage.setItem('eco-completed-ids', JSON.stringify(completedIds)); }, [completedIds]);
+    useEffect(() => { localStorage.setItem('eco-mana', mana.toString()); }, [mana]);
 
     const acceptQuest = (questId) => {
-        if (!acceptedQuests.includes(questId)) {
-            setAcceptedQuests([...acceptedQuests, questId]);
+        if (!acceptedIds.includes(questId)) {
+            setAcceptedIds([...acceptedIds, questId]);
         }
     };
 
     const completeQuest = (questId) => {
-        const quest = questsData.find(q => q.id === questId);
-        setAcceptedQuests(acceptedQuests.filter(id => id !== questId));
-        setCompletedQuests([...completedQuests, questId]);
-        setAvailableQuests(availableQuests.filter(id => id !== questId));
+        const quest = activeQuests.find(q => q.id === questId);
+        if (!quest) return;
 
-        // Add mana reward
-        const newMana = Math.min(MAX_MANA, mana + (quest?.manaReward || 20));
+        setAcceptedIds(acceptedIds.filter(id => id !== questId));
+        setCompletedIds([...completedIds, questId]);
+
+        // Add Rewards
+        setTotalXP(prev => prev + quest.xp);
+
+        const newMana = Math.min(MAX_MANA, mana + quest.manaReward);
         setMana(newMana);
 
-        // Check for fireworks
         if (newMana >= MAX_MANA && mana < MAX_MANA) {
             setShowFireworks(true);
+            // Reset mana after fireworks (4 seconds)
+            setTimeout(() => {
+                setMana(0);
+            }, 4000);
         }
     };
 
     const refreshQuests = () => {
-        // Reset available quests (keeping completed ones marked)
-        setAvailableQuests(questsData.map(q => q.id));
-        setAcceptedQuests([]);
-        // Clear completed for fresh start
-        setCompletedQuests([]);
+        const newQuests = generateQuestBatch(8);
+        setActiveQuests(newQuests);
+        setAcceptedIds([]);
+        setCompletedIds([]);
     };
-
-    const totalXP = completedQuests.reduce((sum, id) => {
-        const quest = questsData.find(q => q.id === id);
-        return sum + (quest?.xp || 0);
-    }, 0);
 
     const level = getLevel(totalXP);
     const xpProgress = getXPProgress(totalXP);
     const nextLevelXP = getXPForNextLevel(totalXP);
 
-    const displayQuests = questsData.filter(q => availableQuests.includes(q.id));
-
     return (
         <div className="quest-container">
             {showFireworks && <Fireworks onComplete={() => setShowFireworks(false)} />}
 
-            {/* Vertical Mana Bar */}
+            {/* Vertical Mana Tower */}
             <div className="mana-tower">
                 <div className="mana-crystal">🔮</div>
                 <div className="mana-tube">
@@ -267,56 +184,50 @@ function QuestBoard() {
                 </div>
 
                 <div className="quests-grid">
-                    {displayQuests.length === 0 ? (
-                        <div className="no-quests">
-                            <span className="no-quests-icon">✨</span>
-                            <p>All quests completed! Click "New Quests" to refresh.</p>
-                        </div>
-                    ) : (
-                        displayQuests.map((quest) => {
-                            const isAccepted = acceptedQuests.includes(quest.id);
-                            const isCompleted = completedQuests.includes(quest.id);
+                    {activeQuests.map((quest) => {
+                        const isAccepted = acceptedIds.includes(quest.id);
+                        const isCompleted = completedIds.includes(quest.id);
 
-                            return (
-                                <div
-                                    key={quest.id}
-                                    className={`quest-card glass-card ${isCompleted ? 'completed' : ''} ${isAccepted ? 'accepted' : ''}`}
-                                >
-                                    <div className="quest-card-header">
-                                        <span className="quest-card-icon">{quest.icon}</span>
-                                        <div
-                                            className="quest-difficulty"
-                                            style={{ '--diff-color': difficultyColors[quest.difficulty] }}
-                                        >
-                                            {quest.difficulty}
-                                        </div>
-                                    </div>
-
-                                    <h3 className="quest-card-title">{quest.title}</h3>
-                                    <p className="quest-card-desc">{quest.description}</p>
-
-                                    <div className="quest-card-footer">
-                                        <div className="quest-rewards">
-                                            <span className="xp-badge">+{quest.xp} XP</span>
-                                            <span className="mana-reward">+{quest.manaReward} 🔮</span>
-                                        </div>
-
-                                        {isCompleted ? (
-                                            <div className="quest-complete-badge">✓ Complete</div>
-                                        ) : isAccepted ? (
-                                            <button className="quest-btn complete-btn" onClick={() => completeQuest(quest.id)}>
-                                                ✓ Mark Complete
-                                            </button>
-                                        ) : (
-                                            <button className="quest-btn accept-btn" onClick={() => acceptQuest(quest.id)}>
-                                                Accept Quest
-                                            </button>
-                                        )}
+                        // Don't hide completed quests, show them as completed
+                        return (
+                            <div
+                                key={quest.id}
+                                className={`quest-card glass-card ${isCompleted ? 'completed' : ''} ${isAccepted ? 'accepted' : ''}`}
+                            >
+                                <div className="quest-card-header">
+                                    <span className="quest-card-icon">{quest.icon}</span>
+                                    <div
+                                        className="quest-difficulty"
+                                        style={{ '--diff-color': difficultyColors[quest.difficulty] }}
+                                    >
+                                        {quest.difficulty}
                                     </div>
                                 </div>
-                            );
-                        })
-                    )}
+
+                                <h3 className="quest-card-title">{quest.title}</h3>
+                                <p className="quest-card-desc">{quest.description}</p>
+
+                                <div className="quest-card-footer">
+                                    <div className="quest-rewards">
+                                        <span className="xp-badge">+{quest.xp} XP</span>
+                                        <span className="mana-reward">+{quest.manaReward} 🔮</span>
+                                    </div>
+
+                                    {isCompleted ? (
+                                        <div className="quest-complete-badge">✓ Complete</div>
+                                    ) : isAccepted ? (
+                                        <button className="quest-btn complete-btn" onClick={() => completeQuest(quest.id)}>
+                                            ✓ Mark Complete
+                                        </button>
+                                    ) : (
+                                        <button className="quest-btn accept-btn" onClick={() => acceptQuest(quest.id)}>
+                                            Accept Quest
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

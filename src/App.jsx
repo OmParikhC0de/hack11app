@@ -8,10 +8,13 @@ import Navigation from './components/Navigation';
 import Consultation from './components/Consultation';
 import FAQ from './components/FAQ';
 import QuestBoard from './components/QuestBoard';
-import RealmMap from './components/RealmMap';
+
+import MagicMap from './components/MagicMap';
 import MouseTrail from './components/MouseTrail';
+import ThemeSwitcher from './components/ThemeSwitcher';
 import { fetchTrends } from './data/mockTrends';
 import './App.css';
+import './Theme.css';
 
 function App() {
   const [trends, setTrends] = useState([]);
@@ -39,6 +42,12 @@ function App() {
     <div className="app-container">
       {/* Mouse Trail Effect */}
       <MouseTrail />
+
+      {/* Theme Switcher */}
+      <ThemeSwitcher />
+
+      {/* Starry Background for Void Theme */}
+      <div className="stars-bg"></div>
 
       {/* Navigation Tabs */}
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
@@ -118,7 +127,7 @@ function App() {
       {activeTab === 'consultation' && <Consultation />}
       {activeTab === 'faq' && <FAQ />}
       {activeTab === 'quests' && <QuestBoard />}
-      {activeTab === 'map' && <RealmMap />}
+      {activeTab === 'map' && <MagicMap />}
 
       {/* Footer */}
       <footer className="app-footer">
