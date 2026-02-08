@@ -22,7 +22,7 @@ We had dependency issues with the map library after pulling from GitHub.
 Google Maps Embed API doesn't support custom markers so we couldn't add a proper "you are here" marker. 
 We worked around it by using the place mode with coordinates instead.
 
-Credits
+Credits:
 Mistral AI - https://mistral.ai, 
 Google Maps Embed API - https://developers.google.com/maps/documentation/embed, 
 React - https://react.dev, 
