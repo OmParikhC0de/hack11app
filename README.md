@@ -8,7 +8,7 @@ Samarjeet Purba
 Purpose
 Sage helps users discover sustainability trends and find eco-friendly resources near them. It includes an AI chatbot for eco-tips, daily quests to encourage sustainable habits, and a map to find local farmers markets, thrift stores, and recycling centers.
 
-Tools Used
+Tools Used:
 React
 Vite
 JavaScript
