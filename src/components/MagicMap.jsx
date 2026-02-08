@@ -1,102 +1,141 @@
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 import './MagicMap.css';
 
-// Fix for default Leaflet icon issues in Vite/Webpack
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: null,
-    iconUrl: null,
-    shadowUrl: null,
-});
-
-// Custom Magical Icons
-const createMagicIcon = (emoji, color) => L.divIcon({
-    className: 'magic-marker-icon',
-    html: `<div style="background: ${color}; box-shadow: 0 0 15px ${color}"><span>${emoji}</span></div>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-    popupAnchor: [0, -20]
-});
-
-const icons = {
-    market: createMagicIcon('🥬', '#00ff88'),
-    shop: createMagicIcon('🛍️', '#ffd700'),
-    nature: createMagicIcon('🌳', '#00c8ff'),
-    energy: createMagicIcon('⚡', '#ff4500'),
-    rune: createMagicIcon('✨', '#a855f7') // For decoration
-};
-
-// Mock Locations (Magical Overlay)
-const magicalLocations = [
-    { id: 1, name: "Crystal Grove Market", type: "market", lat: 40.7128, lng: -74.0060, desc: "Organic potions and herbs" },
-    { id: 2, name: "Sunfire Solar Spire", type: "energy", lat: 40.7580, lng: -73.9855, desc: "Renewable energy source" },
-    { id: 3, name: "Sanctuary of Old Threads", type: "shop", lat: 40.7829, lng: -73.9654, desc: "Thrifted robes and armor" },
-    { id: 4, name: "Whispering Park", type: "nature", lat: 40.7484, lng: -73.9857, desc: "Ancient trees speak here" },
-    // Random Runes
-    { id: 101, name: "Ancient Rune", type: "rune", lat: 40.73, lng: -74.02, desc: "A source of magical power" },
-    { id: 102, name: "Star Fragment", type: "rune", lat: 40.76, lng: -73.95, desc: "Fallen from the void" },
+// Eco-friendly search categories
+const searchCategories = [
+    { id: 'my-location', label: 'My Location', icon: '📍', query: null },
+    { id: 'farmers-market', label: 'Farmers Markets', icon: '🥬', query: 'farmers market organic' },
+    { id: 'thrift', label: 'Thrift Stores', icon: '👕', query: 'thrift store secondhand' },
+    { id: 'recycling', label: 'Recycling Centers', icon: '♻️', query: 'recycling center' },
+    { id: 'zero-waste', label: 'Zero Waste', icon: '🧴', query: 'zero waste store' },
+    { id: 'vegan', label: 'Vegan Food', icon: '🥗', query: 'vegan restaurant' },
+    { id: 'bike', label: 'Bike Shops', icon: '🚲', query: 'bike repair shop' },
 ];
 
-function LocationMarker() {
-    const [position, setPosition] = useState(null);
-    const map = useMap();
-
-    useEffect(() => {
-        map.locate().on("locationfound", function (e) {
-            setPosition(e.latlng);
-            map.flyTo(e.latlng, 13);
-        });
-    }, [map]);
-
-    return position === null ? null : (
-        <Marker position={position} icon={createMagicIcon('🧙‍♂️', '#ffffff')}>
-            <Popup>You are here!</Popup>
-        </Marker>
-    );
-}
-
 function MagicMap() {
-    // Default to NYC if no location found
-    const center = [40.7128, -74.0060];
+    const [userLocation, setUserLocation] = useState(null);
+    const [locationError, setLocationError] = useState(null);
+    const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+    const [activeCategory, setActiveCategory] = useState('farmers-market');
+    const [mapQuery, setMapQuery] = useState('farmers market organic');
+
+    // Request location on mount
+    useEffect(() => {
+        if (!navigator.geolocation) {
+            setLocationError('Geolocation is not supported by your browser');
+            setIsLoadingLocation(false);
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setUserLocation({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
+                setIsLoadingLocation(false);
+            },
+            (error) => {
+                let message = 'Unable to retrieve your location';
+                if (error.code === 1) message = 'Location access denied. Please enable location services.';
+                else if (error.code === 2) message = 'Location unavailable. Please try again.';
+                else if (error.code === 3) message = 'Location request timed out.';
+                setLocationError(message);
+                setIsLoadingLocation(false);
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }, []);
+
+    const handleCategoryClick = (category) => {
+        setActiveCategory(category.id);
+        setMapQuery(category.query);
+    };
+
+    // Build Google Maps embed URL
+    const getMapEmbedUrl = () => {
+        const apiKey = 'AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8'; // Free embed API key
+
+        // If "My Location" is selected, show a marker at user's precise location
+        if (activeCategory === 'my-location' && userLocation) {
+            return `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${userLocation.lat},${userLocation.lng}&zoom=15`;
+        }
+
+        // Otherwise, search for the selected category near user's location
+        let locationParam = '';
+        if (userLocation) {
+            locationParam = `&center=${userLocation.lat},${userLocation.lng}&zoom=13`;
+        }
+
+        return `https://www.google.com/maps/embed/v1/search?key=${apiKey}&q=${encodeURIComponent(mapQuery || 'eco friendly')}${locationParam}`;
+    };
 
     return (
         <div className="magic-map-container glass-card">
             <div className="map-header">
-                <h2 className="map-title">Realm Map</h2>
+                <div className="header-left">
+                    <span className="map-icon">🗺️</span>
+                    <h2 className="map-title">Realm Map</h2>
+                </div>
                 <div className="map-controls">
-                    <span className="live-indicator">● Live Uplink</span>
+                    {userLocation ? (
+                        <span className="live-indicator">● Location Active</span>
+                    ) : (
+                        <span className="location-pending">📍 {isLoadingLocation ? 'Locating...' : 'No Location'}</span>
+                    )}
                 </div>
             </div>
 
-            <div className="leaflet-frame">
-                <MapContainer center={center} zoom={13} scrollWheelZoom={true} style={{ height: "100%", width: "100%" }}>
-                    {/* Dark Matter Tiles */}
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    />
+            <p className="map-subtitle">Discover eco-friendly locations near you</p>
 
-                    <LocationMarker />
+            {/* Category Filters */}
+            <div className="category-filters">
+                {searchCategories.map(category => (
+                    <button
+                        key={category.id}
+                        className={`category-btn ${activeCategory === category.id ? 'active' : ''}`}
+                        onClick={() => handleCategoryClick(category)}
+                    >
+                        <span className="category-icon">{category.icon}</span>
+                        <span className="category-label">{category.label}</span>
+                    </button>
+                ))}
+            </div>
 
-                    {magicalLocations.map(loc => (
-                        <Marker
-                            key={loc.id}
-                            position={[loc.lat, loc.lng]}
-                            icon={icons[loc.type]}
-                        >
-                            <Popup className="magic-popup">
-                                <strong>{loc.name}</strong><br />
-                                {loc.desc}
-                            </Popup>
-                        </Marker>
-                    ))}
-                </MapContainer>
+            {/* Map Display */}
+            <div className="map-frame">
+                {locationError && !userLocation ? (
+                    <div className="location-error-overlay">
+                        <span className="error-icon">⚠️</span>
+                        <p>{locationError}</p>
+                        <p className="error-hint">Showing general results instead</p>
+                    </div>
+                ) : null}
 
-                {/* Decorative Overlay */}
+                {isLoadingLocation ? (
+                    <div className="loading-overlay">
+                        <div className="magic-spinner"></div>
+                        <p>Casting location spell...</p>
+                    </div>
+                ) : (
+                    <iframe
+                        className="google-map-embed"
+                        src={getMapEmbedUrl()}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="Eco-friendly locations map"
+                    ></iframe>
+                )}
+
+                {/* Decorative Border */}
                 <div className="map-overlay-border"></div>
+            </div>
+
+            {/* Info Footer */}
+            <div className="map-footer">
+                <span className="footer-icon">💡</span>
+                <p>Click a category to find eco-friendly spots {userLocation ? 'near you' : 'in your area'}!</p>
             </div>
         </div>
     );

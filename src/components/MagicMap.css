@@ -2,66 +2,34 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 80vh;
     padding: 1.5rem;
     gap: 1rem;
-    overflow: hidden;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .map-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
-.map-title {
-    font-family: 'Cinzel', serif;
-    color: var(--gold);
-    margin: 0;
-    font-size: 1.5rem;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-}
-
-.live-indicator {
-    font-size: 0.8rem;
-    color: var(--magic-green);
-    animation: pulse 2s infinite;
-}
-
-.leaflet-frame {
-    flex: 1;
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-    border: 2px solid var(--glass-border);
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-}
-
-.map-overlay-border {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    border: 1px solid rgba(255, 215, 0, 0.1);
-    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8);
-    z-index: 9999;
-    border-radius: 16px;
-}
-
-/* Custom Marker Icons */
-.magic-marker-icon div {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.8);
+.header-left {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    animation: floatMarker 3s ease-in-out infinite;
-    backdrop-filter: blur(4px);
+    gap: 0.75rem;
 }
 
-@keyframes floatMarker {
+.map-icon {
+    font-size: 2rem;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
 
     0%,
     100% {
@@ -69,32 +37,215 @@
     }
 
     50% {
-        transform: translateY(-8px);
+        transform: translateY(-5px);
+    }
+}
+
+.map-title {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    margin: 0;
+    font-size: 1.75rem;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.map-subtitle {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 1rem;
+}
+
+.live-indicator {
+    font-size: 0.85rem;
+    color: var(--magic-green);
+    animation: pulse 2s infinite;
+    background: rgba(0, 255, 136, 0.1);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.location-pending {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+}
+
+/* Category Filters */
+.category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.category-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+}
+
+.category-btn:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: var(--gold);
+    transform: translateY(-2px);
+}
+
+.category-btn.active {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.2));
+    border-color: var(--gold);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.category-icon {
+    font-size: 1.1rem;
+}
+
+.category-label {
+    font-weight: 500;
+}
+
+/* Map Frame */
+.map-frame {
+    flex: 1;
+    min-height: 450px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid var(--glass-border);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    background: rgba(10, 10, 20, 0.8);
+}
+
+.google-map-embed {
+    width: 100%;
+    height: 100%;
+    min-height: 450px;
+    border: none;
+}
+
+.map-overlay-border {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    border-radius: 16px;
+}
+
+/* Loading State */
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 10, 30, 0.9);
+    color: var(--text-primary);
+    gap: 1rem;
+}
+
+.magic-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 215, 0, 0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error State */
+.location-error-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: rgba(255, 100, 100, 0.1);
+    border-bottom: 1px solid rgba(255, 100, 100, 0.3);
+    text-align: center;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+}
+
+.location-error-overlay .error-icon {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.location-error-overlay p {
+    margin: 0;
+    color: #ff9999;
+    font-size: 0.9rem;
+}
+
+.error-hint {
+    color: var(--text-secondary) !important;
+    font-size: 0.8rem !important;
+    margin-top: 0.25rem !important;
+}
+
+/* Footer */
+.map-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+}
+
+.map-footer .footer-icon {
+    font-size: 1.25rem;
+}
+
+.map-footer p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .magic-map-container {
+        padding: 1rem;
     }
 
-}
+    .map-title {
+        font-size: 1.4rem;
+    }
 
-/* Popup Styling */
-.leaflet-popup-content-wrapper {
-    background: rgba(10, 10, 20, 0.9) !important;
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--gold);
-    color: var(--text-primary) !important;
-    border-radius: 12px !important;
-}
+    .category-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
 
-.leaflet-popup-tip {
-    background: rgba(10, 10, 20, 0.9) !important;
-    border: 1px solid var(--gold);
-    /* Tip border hack might vary */
-}
+    .map-frame {
+        min-height: 350px;
+    }
 
-.leaflet-popup-content {
-    font-family: 'Outfit', sans-serif;
-    margin: 10px 14px !important;
-}
-
-.leaflet-popup-content strong {
-    color: var(--gold);
-    font-family: 'Cinzel', serif;
+    .google-map-embed {
+        min-height: 350px;
+    }
 }
